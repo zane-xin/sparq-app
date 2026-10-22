@@ -1,0 +1,33 @@
+dev:
+  # dev.enabled 仅在本地开发环境注册开发态 token 路由。
+  enabled: true
+  # token_secret 只用于本机开发，正式部署必须替换或关闭 dev.enabled。
+  token_secret: local-sparq-development-token-secret-32-bytes
+  # plugins 按插件 code 保存 Remote 联调密钥，每个值至少 32 字节；没有 Remote 插件时保持为空。
+  plugins: {}
+app:
+  # env 开发环境标识，会继续加载 app.dev.yaml 的环境覆盖。
+  env: dev
+  # addr 开发环境 HTTP 监听端口。
+  addr: 19090
+  # install_enabled 启用安装引导流程，测试安装时保持 true。
+  install_enabled: true
+
+log:
+  # level 开发环境默认输出 debug 日志。
+  level: debug
+  # add_source 开发环境输出调用文件和行号。
+  add_source: true
+  # output 开发环境默认输出到控制台。
+  output: stdout
+
+http:
+  request_log:
+    # enabled 开发环境输出 HTTP 访问日志。
+    enabled: true
+
+storage:
+  # root 开发环境公开上传资源目录。
+  root: storage/uploads/public
+  private_root: storage/uploads/private
+  multipart_root: storage/tmp/uploads

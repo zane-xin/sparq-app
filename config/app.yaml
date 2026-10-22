@@ -1,0 +1,170 @@
+app:
+    # addr HTTP 监听地址，支持 19090、:19090 或 127.0.0.1:19090。
+    addr: 19090
+    # key 应用内部加密和签名使用的密钥，安装流程会自动生成。
+    key: ""
+    # url app 对外访问地址，storage public_url 未配置时会使用 {app.url}/uploads。
+    url: ""
+    # instance_id 只作为旧配置首次迁移入口；运行时身份以 identity_path 文件为准。
+    instance_id: ""
+    # identity_path 保存可随应用迁移的稳定实例身份，必须位于应用根目录内。
+    identity_path: storage/app-identity.json
+    # env 运行环境，会加载同目录下的 app.{env}.yaml。
+    env: local
+    # timezone 应用默认时区，统一时间输出会按该时区转换。
+    timezone: Asia/Shanghai
+    # time_format 应用默认时间输出格式，使用 Y-m-d H:i:s 这类格式占位符。
+    time_format: Y-m-d H:i:s
+    # managed_plugins_path ManagedProcess 插件当前运行包目录，必须位于应用根目录内；更新临时目录由宿主放入 plugins/.staging。
+    managed_plugins_path: plugins
+static:
+    dirs:
+        # prefix 浏览器访问前缀，root 是相对应用根目录的本地目录，禁止使用绝对路径或 ../ 越出应用目录。
+        - prefix: /assets
+          root: public/assets
+    files:
+        # path 单文件访问路径，file 是相对应用根目录的本地文件。
+        - path: /favicon.ico
+          file: public/favicon.ico
+log:
+    # level 日志级别，可选 debug、info、warn、error。
+    level: info
+    # format 日志格式，可选 text、json。
+    format: text
+    # add_source 输出调用文件和行号，开发环境可开启。
+    add_source: false
+    # output 输出位置，可选 stdout、file、both。
+    output: both
+    file:
+        # dir 日志文件目录，仅 output 为 file 或 both 时生效。
+        dir: storage/logs
+        # name 日志文件名称，不需要写 .log 后缀。
+        name: app
+        # daily 在系统本地时间每天午夜轮转；当前日志始终写入 app.log。
+        daily: true
+        # max_size_mb 单文件上限（MiB），0 关闭大小轮转，可与 daily 同时开启。
+        max_size_mb: 0
+        # max_backups 保留的备份时间戳组数；0 不主动按数量删除历史日志。
+        max_backups: 0
+        # max_age_days 保留天数；0 不主动按时间删除历史日志。
+        max_age_days: 0
+        # compress 是否将轮转备份压缩为 gzip。
+        compress: false
+
+
+
+database:
+    # default 默认数据库连接名称。未配置 groups 时，默认只启用该连接。
+    default: sqlite
+    connections:
+        sqlite:
+            # 仅被 default 或 groups 引用时启用，安装切换数据库后不会额外打开 SQLite。
+            # driver sqlite 数据库驱动，仅用于源码开发和测试，production 构建不包含此驱动。
+            driver: sqlite
+            # dsn sqlite 连接串，参数写在 DSN 中，例如 storage/database/sparq.sqlite?_pragma=busy_timeout(5000)&_pragma=journal_mode(WAL)。
+            dsn: "storage/database/sparq.sqlite?_pragma=busy_timeout(5000)&_pragma=journal_mode(WAL)"
+            # table_prefix 当前连接上的业务表名前缀。
+            table_prefix: pt_
+            # max_open 最大打开连接数，0 表示使用 driver 默认值。
+            max_open: 1
+            # max_idle 最大空闲连接数，0 表示使用 driver 默认值。
+            max_idle: 1
+            # conn_max_lifetime 连接最大生命周期，0 表示不限制。
+            conn_max_lifetime: 0
+            # conn_max_idle_time 空闲连接最大保留时间，0 表示不限制。
+            conn_max_idle_time: 0
+        mysql:
+            # enabled 为 false 时即使配置完整也不会初始化，示例连接默认关闭。
+            enabled: false
+            # driver mysql 数据库驱动。
+            driver: mysql
+            # dsn mysql 连接串，编码、时区等参数写在 DSN 中，例如 user:pass@tcp(127.0.0.1:3306)/sparq?charset=utf8mb4&parseTime=true&loc=Local。
+            dsn: "user:pass@tcp(127.0.0.1:3306)/sparq?charset=utf8mb4&parseTime=true&loc=Local"
+            # table_prefix 当前连接上的业务表名前缀。
+            table_prefix: pt_
+            # max_open 最大打开连接数。
+            max_open: 20
+            # max_idle 最大空闲连接数。
+            max_idle: 10
+            # conn_max_lifetime 连接最大生命周期。
+            conn_max_lifetime: 30m
+            # conn_max_idle_time 空闲连接最大保留时间。
+            conn_max_idle_time: 10m
+        postgres:
+            enabled: false
+            # driver postgres 数据库驱动。
+            driver: postgres
+            # dsn postgres 连接串，sslmode、timezone 等参数写在 DSN 中，例如 postgres://user:pass@127.0.0.1:5432/sparq?sslmode=disable&timezone=Asia/Shanghai。
+            dsn: "postgres://user:pass@127.0.0.1:5432/sparq?sslmode=disable&timezone=Asia/Shanghai"
+            # table_prefix 当前连接上的业务表名前缀。
+            table_prefix: pt_
+            # max_open 最大打开连接数。
+            max_open: 20
+            # max_idle 最大空闲连接数。
+            max_idle: 10
+            # conn_max_lifetime 连接最大生命周期。
+            conn_max_lifetime: 30m
+            # conn_max_idle_time 空闲连接最大保留时间。
+            conn_max_idle_time: 10m
+    # 业务命名连接不需要放入 groups，只要在对应 connection 上设置 enabled: true 即可。
+    # connections:
+    #   order:
+    #     enabled: true
+    #     driver: mysql
+    #     dsn: "user:pass@tcp(127.0.0.1:3306)/order?charset=utf8mb4&parseTime=true&loc=Local"
+
+schema:
+    # 是否执行自动迁移
+    auto_migrate: true
+    # auto_publish_initial code schema 首次创建资源后自动检查并发布，用于安装/首次启动时创建运行时表。
+    auto_publish_initial: true
+    # auto_publish_non_destructive code schema 后续发生非破坏性变更时自动发布，例如新增非破坏性字段或仅调整展示配置。
+    # 生产环境如果希望先人工确认 migration_plan，可改为 false。
+    auto_publish_non_destructive: true
+    # 破坏性计划不会在启动时自动执行，使用 sparq schema apply <resource> 检查并确认。
+    # scope.enabled 开启后，未显式注册 Scope Adapter 的 Runtime 业务资源会 fail closed。
+    # 当前需等待实际管理资源完成动作权限和归属字段注册后再开启。
+    scope:
+        enabled: false
+
+organization:
+    # enabled 控制机构、部门、用户组织归属和组织数据范围能力。
+    enabled: false
+redis:
+    # enabled 是否启用内置 Redis cache，未启用时使用内存 cache。
+    enabled: false
+    # addr Redis 地址，例如 127.0.0.1:6379。
+    addr: ""
+    # username Redis ACL 用户名，未配置则使用默认用户。
+    username: ""
+    # password Redis 密码。
+    password: ""
+    # db Redis DB 编号。
+    db: 0
+    # prefix Redis key 前缀。
+    prefix: "sparq:"
+
+events:
+    # driver 事件传输驱动，可选 local 或当前 App 注册的自定义驱动。
+    driver: local
+    # recent_capacity 进程内最近事件诊断视图容量，不是持久化审计记录。
+    recent_capacity: 1000
+    # record_payload 是否在最近事件视图中保留 Payload；默认关闭，避免保存业务敏感数据。
+    record_payload: false
+
+queues:
+    # driver 工作队列驱动，可选 local 或当前 App 注册的自定义驱动。
+    driver: local
+storage:
+    # root 公开上传资源目录。
+    root: storage/uploads/public
+    # private_root 私有上传资源目录，不会注册静态路由。
+    private_root: storage/uploads/private
+    # multipart_root 分片上传临时目录。
+    multipart_root: storage/tmp/uploads
+    # public_url 文件公开访问前缀，留空时使用 /uploads。
+    public_url: ""
+    # private_url_prefix 私有资源签名临时地址路由。
+    private_url_prefix: /__storage/private
+    # private_url_secret 私有地址签名密钥；留空时使用 app.key 派生密钥。
+    private_url_secret: ""

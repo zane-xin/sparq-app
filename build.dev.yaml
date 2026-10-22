@@ -1,0 +1,11 @@
+# 仅供根 workspace 联调。单仓发布使用 Makefile 和已构建 Admin 资源。
+app:
+    path: .
+    package: ./cmd/sparq
+    binary: sparq
+admin:
+    path: ../sparq-admin
+    commands:
+        - build
+output:
+    dir: ../bin/app

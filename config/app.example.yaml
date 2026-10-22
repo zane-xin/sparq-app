@@ -1,0 +1,201 @@
+# app.example.yaml 是完整配置示例，只用于说明，不会被默认加载。
+
+app:
+  # title 应用名称。
+  title: Sparq
+  # addr HTTP 监听地址，支持 19090、:19090 或 127.0.0.1:19090。
+  addr: 19090
+  # key 应用内部加密和签名使用的密钥，建议使用安装流程生成的 base64: 前缀 32 字节密钥。
+  key: ""
+  # url app 对外访问地址，storage.public_url 未配置时会使用 {app.url}/uploads。
+  url: ""
+  # instance_id 只作为旧配置首次迁移入口；运行时身份以 identity_path 文件为准。
+  instance_id: ""
+  # identity_path 保存可随应用迁移的稳定实例身份，必须位于应用根目录内。
+  identity_path: storage/app-identity.json
+  # admin_path 后台入口路径，留空时由安装流程生成。
+  admin_path: ""
+  # timezone 应用默认时区。
+  timezone: Asia/Shanghai
+  # time_format 应用默认时间输出格式，支持 Y-m-d H:i:s 这类常用格式写法。
+  time_format: Y-m-d H:i:s
+  # env 运行环境，会继续加载 app.{env}.yaml。
+  env: local
+  # managed_plugins_path ManagedProcess 插件当前运行包目录，必须位于应用根目录内；更新临时目录由宿主放入 plugins/.staging。
+  managed_plugins_path: plugins
+  # install_enabled 是否启用安装引导检查。默认 true，开发环境可在 app.dev.yaml 中设为 false。
+  install_enabled: true
+  # install_mode 安装入口访问模式，可选 open、protected、local_only。
+  install_mode: open
+  # install_marker_path 安装完成标记文件路径。
+  install_marker_path: storage/installed
+
+release:
+  # trusted_keys 使用 key_id=PEM公钥路径；官方自动更新必须至少配置一个有效 Ed25519 公钥。
+  trusted_keys: []
+
+log:
+  # level 日志级别，可选 debug、info、warn、error。
+  level: info
+  # format 日志格式，可选 text、json。
+  format: text
+  # add_source 是否输出调用文件和行号，开发环境可开启。
+  add_source: false
+  # output 输出位置，可选 stdout、file、both。
+  output: both
+  file:
+    # dir 日志文件目录，仅 output 为 file 或 both 时生效。
+    dir: storage/logs
+    # name 日志文件名称，不需要写 .log 后缀。
+    name: app
+    # daily 在系统本地时间每天午夜轮转；当前日志始终写入 app.log。
+    daily: true
+    # max_size_mb 单文件上限（MiB），0 关闭大小轮转，可与 daily 同时开启。
+    max_size_mb: 0
+    # max_backups 保留的备份时间戳组数；0 不主动按数量删除历史日志。
+    max_backups: 0
+    # max_age_days 保留天数；0 不主动按时间删除历史日志。
+    max_age_days: 0
+    # compress 是否将轮转备份压缩为 gzip。
+    compress: false
+
+http:
+  request_log:
+    # enabled 是否输出 HTTP 请求日志。
+    enabled: false
+
+static:
+  dirs:
+    # prefix 浏览器访问前缀，root 是相对应用根目录的本地目录，禁止使用绝对路径或 ../ 越出应用目录。
+    - prefix: /assets
+      root: public/assets
+  files:
+    # path 单文件访问路径，file 是相对应用根目录的本地文件。
+    - path: /favicon.ico
+      file: public/favicon.ico
+
+database:
+  # default 默认数据库连接名称。未配置 groups 时，默认只启用该连接。
+  default: sqlite
+  connections:
+    sqlite:
+      # 仅被 default 或 groups 引用时启用，安装切换数据库后不会额外打开 SQLite。
+      # driver sqlite 仅用于源码开发和测试，production 构建不包含此驱动。
+      driver: sqlite
+      # dsn sqlite 连接串。相对路径按应用根目录解析。
+      dsn: "storage/database/sparq.sqlite?_pragma=busy_timeout(5000)&_pragma=journal_mode(WAL)"
+      # table_prefix 当前连接上的业务表名前缀。
+      table_prefix: pt_
+      # max_open 最大打开连接数，0 表示使用 driver 默认值。
+      max_open: 1
+      # max_idle 最大空闲连接数，0 表示使用 driver 默认值。
+      max_idle: 1
+      # conn_max_lifetime 连接最大生命周期，0 表示不限制。
+      conn_max_lifetime: 0
+      # conn_max_idle_time 空闲连接最大保留时间，0 表示不限制。
+      conn_max_idle_time: 0
+    mysql:
+      # enabled 为 false 时即使配置完整也不会初始化，示例连接默认关闭。
+      enabled: false
+      driver: mysql
+      dsn: "user:pass@tcp(127.0.0.1:3306)/sparq?charset=utf8mb4&parseTime=true&loc=Local"
+      table_prefix: pt_
+      max_open: 20
+      max_idle: 10
+      conn_max_lifetime: 30m
+      conn_max_idle_time: 10m
+    postgres:
+      enabled: false
+      driver: postgres
+      dsn: "postgres://user:pass@127.0.0.1:5432/sparq?sslmode=disable&timezone=Asia/Shanghai"
+      table_prefix: pt_
+      max_open: 20
+      max_idle: 10
+      conn_max_lifetime: 30m
+      conn_max_idle_time: 10m
+  # groups 仅在需要读写分离或多数据库连接组时配置。
+  # 配置 groups 后，除 default 外，还会启用 group 中引用的 write/reads 连接。
+  # 业务命名连接不需要放入 groups，只要在对应 connection 上设置 enabled: true 即可。
+  # connections:
+  #   order:
+  #     enabled: true
+  #     driver: mysql
+  #     dsn: "user:pass@tcp(127.0.0.1:3306)/order?charset=utf8mb4&parseTime=true&loc=Local"
+  # groups:
+  #   main:
+  #     write: mysql
+  #     reads: [mysql]
+  #     read_strategy: first
+
+schema:
+  # auto_migrate 启动时自动创建 schema 元数据表。
+  auto_migrate: true
+  # auto_publish_initial code schema 首次创建资源后自动检查并发布。
+  auto_publish_initial: true
+  # auto_publish_non_destructive code schema 后续发生非破坏性变更时自动发布。
+  auto_publish_non_destructive: true
+  # 破坏性计划使用 sparq schema apply <resource> 显式检查并确认。
+  # scope.enabled 要求每个 Runtime 业务资源显式注册动作权限和归属字段；未完成注册前保持关闭。
+  scope:
+    enabled: false
+
+organization:
+  # enabled 开启机构、部门、用户组织归属和组织数据范围能力；轻量应用可显式关闭。
+  enabled: true
+
+redis:
+  # enabled 是否初始化 Redis 资源；缓存实现由 cache.driver 单独选择。
+  enabled: false
+  # addr Redis 地址，例如 127.0.0.1:6379。
+  addr: ""
+  # username Redis ACL 用户名，未配置则使用默认用户。
+  username: ""
+  # password Redis 密码。
+  password: ""
+  # db Redis DB 编号。
+  db: 0
+
+cache:
+  # driver 默认缓存驱动，可选 memory、redis 或当前 App 注册的自定义驱动。
+  driver: memory
+  # prefix cache key 前缀。Redis cache 使用该前缀隔离键空间。
+  prefix: "sparq:"
+  # max_value_bytes 单个缓存值上限，memory 和 redis 均会检查；0 表示不限制。
+  max_value_bytes: 1048576
+  memory:
+    # default_ttl 仅供 SetDefault 使用，0 表示永不过期。
+    default_ttl: 0
+    # cleanup_interval 后台过期清理间隔，0 表示不启动清理任务。
+    cleanup_interval: 1m
+    # max_entries 最大缓存条目数，0 表示不限制。
+    max_entries: 10000
+    # max_payload_bytes 所有 key 和 value 的累计载荷上限，0 表示不限制。
+    max_payload_bytes: 67108864
+  redis:
+    # connection 使用 redis 配置中的连接名称。
+    connection: default
+
+events:
+  # driver 事件传输驱动，可选 local 或当前 App 注册的自定义驱动。
+  driver: local
+  # recent_capacity 进程内最近事件诊断视图容量，不是持久化审计记录。
+  recent_capacity: 1000
+  # record_payload 是否在最近事件视图中保留 Payload；默认关闭，避免保存业务敏感数据。
+  record_payload: false
+
+queues:
+  # driver 工作队列驱动，可选 local 或当前 App 注册的自定义驱动。
+  driver: local
+storage:
+  # root 公开上传资源目录。
+  root: storage/uploads/public
+  # private_root 私有上传资源目录，不会注册静态路由。
+  private_root: storage/uploads/private
+  # multipart_root 分片上传临时目录。
+  multipart_root: storage/tmp/uploads
+  # public_url 文件公开访问前缀，留空时使用 /uploads。
+  public_url: ""
+  # private_url_prefix 私有资源签名临时地址路由。
+  private_url_prefix: /__storage/private
+  # private_url_secret 私有地址签名密钥；留空时使用 app.key 派生密钥。
+  private_url_secret: ""

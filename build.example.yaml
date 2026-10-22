@@ -1,0 +1,61 @@
+# Sparq 应用正式构建配置示例。
+#
+# 所有相对路径都以本文件所在目录（sparq-app/）为基准解析。
+# 该文件只描述发布构建，不替代 config/app*.yaml 等运行配置。
+#
+# 使用方式（在仓库根目录执行）：
+#   sparq-tool build app --config sparq-app/build.example.yaml --target linux/amd64
+#
+# 要使用环境配置，可复制为 build.yaml 和 build.release.yaml，然后执行：
+#   sparq-tool build app --config sparq-app/build.yaml --env release
+
+# 构建元数据。命令行 --version 和 --git-hash 的优先级高于这里的值。
+version: dev
+# auto 表示从本文件所在目录的 Git 仓库读取 HEAD，并记录工作区是否有未提交修改。
+git_hash: auto
+
+app:
+  # 必填。Go 应用模块目录；未配置 app.path 时构建会直接失败。
+  path: .
+  # 相对于 app.path 的 Go package，通常指向 cmd/<应用入口>。
+  package: ./cmd/sparq
+  # 输出到 output.dir 根目录的二进制文件名。
+  binary: sparq
+  # 仅填写 go build 的额外参数，不要填写 go 或 build 命令本身。
+  commands: []
+
+updater:
+  # updater.path 是可选的。删除或留空整个 updater.path 后不会构建更新器。
+  path: ../sparq-tool
+  package: ./cmd/sparq-updater
+  binary: sparq-updater
+  commands: []
+
+admin:
+  # Admin Shell 前端项目目录。设置 path 才会执行前端构建并发布 public/admin/。
+  path: ../sparq-admin
+  # package script 名称；留空时默认执行 build。
+  commands: [build]
+
+# 二次开发应用前端是可选的。默认壳没有该目录时不要填写 frontend.path。
+# 构建完成后 dist/ 会发布到 public/admin/__app__/，运行时由 Admin 前缀下的 __app__ 资源路径加载。
+# frontend:
+#   path: ../my-frontend
+#   commands: [build]
+
+# 应用运行文件和目录只通过 copy 显式发布。source 相对于 app.path，target 相对于 output.dir。
+copy:
+  - source: config/app.yaml
+    target: config/app.yaml
+  - source: config/app.example.yaml
+    target: config/app.example.yaml
+# 二次开发应用需要发布主题等目录时继续增加条目：
+#  - source: themes
+#    target: themes
+
+output:
+  # 所有产物的根目录，包含 sparq、可选的 sparq-updater、public/、config/ 和 build-manifest.json。
+  dir: ../bin/app
+
+# 前端包管理器不在构建配置中声明。sparq-tool 会根据 package.json、锁文件和已有
+# toolchain 配置自动选择 pnpm 或 npm；依赖必须在执行构建前准备好。
