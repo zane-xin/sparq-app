@@ -79,7 +79,9 @@ def main():
     run("go", "mod", "verify")
     run("go", "test", "./...", host=True)
     run("go", "vet", "./...")
-    run("go", "build", "./...")
+    # 单个 main 包默认会在仓库根目录生成二进制；检查产物仅保存在临时目录。
+    with tempfile.TemporaryDirectory(prefix="sparq-check-build-") as temporary:
+        run("go", "build", "-o", temporary + os.sep, "./...")
     if args.action == "release":
         version = args.version.removeprefix("v")
         if name == "sparq-tool":
