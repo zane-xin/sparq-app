@@ -30,6 +30,20 @@ app:
   # install_marker_path 安装完成标记文件路径。
   install_marker_path: storage/installed
 
+admin:
+  # 所有展示项均可省略或留空，未配置时逐项使用内置默认值；修改后重启后端并刷新浏览器。
+  title: Sparq Admin
+  subtitle: Admin Console
+  # 导航和登录页共用 Logo，留空展示默认 S 标记；URL 必须在登录前可访问。
+  logo_url: ""
+  # 留空使用 Admin 内置浏览器图标。
+  favicon_url: ""
+  login:
+    headline: Admin Console
+    description: 面向宿主控制台、Schema 资源和插件入口的管理工作区。
+    # 留空使用 Admin 内置控制台配图。
+    image_url: ""
+
 release:
   # trusted_keys 使用 key_id=PEM公钥路径；官方自动更新必须至少配置一个有效 Ed25519 公钥。
   trusted_keys: []

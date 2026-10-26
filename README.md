@@ -181,6 +181,26 @@ CLI 参数可以覆盖默认路径和常用配置：
 ./bin/sparq --root . --config ./custom/app.yaml --addr :19090 --env dev
 ```
 
+### 后台展示
+
+后台名称、Logo 和登录页文案在 `config/app.yaml` 的 `admin` 下配置，不需要重新构建前端：
+
+```yaml
+admin:
+  title: 运营中心
+  subtitle: 业务管理平台
+  logo_url: /assets/admin-logo.svg
+  favicon_url: /assets/favicon.ico
+  login:
+    headline: 欢迎使用运营中心
+    description: 统一管理业务与资源
+    image_url: /assets/login-cover.webp
+```
+
+该片段只展示后台配置。修改后重启后端并刷新浏览器，导航、登录页和浏览器标题使用同一份后台名称；`app.title` 仍是应用名称，不代替 `admin.title`。所有展示项都可省略或留空，并逐项使用默认方案：名称为 `Sparq Admin`，副标题和登录宣传标题为 `Admin Console`，Logo 为字母 `S`，浏览器图标和登录配图使用内置资源，说明使用默认管理工作区文案。
+
+图片配置是浏览器访问 URL，需在登录前可访问。使用 `/assets/` 时，将文件放在 `public/assets/`，并保留示例中的 `static.dirs` 映射；也可使用公开的 HTTPS 图片地址。仅填写 URL 不会自动复制或发布本地文件。上述示例文件需由应用自行提供。
+
 ## 运行数据
 
 默认运行数据写入：
