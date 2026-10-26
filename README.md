@@ -219,3 +219,13 @@ App 版本与 Admin 版本独立。脚本先校验归档摘要、Admin 版本、
 本地 public/admin、public/assets、上传目录、storage 和安装配置不会复制进默认发行物。业务应用的额外静态资产应使用自己的显式构建配置。根 workspace 的 build.dev.yaml 仅用于联调，不是正式发布输入。既有工具的官方签名整包通道继续遵循其原有版本约束。
 
 验证归档处理：`python3 -m unittest discover -s scripts -p 'test_*.py'`。
+
+## GitHub Actions 读取私有 Go 依赖
+
+仓库及其 Sparq 依赖暂未公开时，在本仓库的 **Settings → Secrets and variables → Actions → New repository secret** 添加 `SPARQ_GO_READ_TOKEN`。使用 fine-grained personal access token：Resource owner 选择 `zane-xin`，Repository access 选择本模块 `go.mod` 中直接和间接依赖的 Sparq 仓库，Repository permissions 只需 **Contents: Read-only**。令牌所属账号也必须有这些仓库的读取权限。
+
+统一配置时可选择 `sparq-protocol`、`sparq-blade`、`sparq-kernel`、`sparq-schema` 和 `sparq` 五个依赖仓库；不需要内部插件仓库的权限。分别在 `sparq-kernel`、`sparq-schema`、`sparq`、`sparq-tool` 和 `sparq-app` 配置同名 Secret。若使用组织级 Secret，需要将上述消费仓库加入可用范围。GitHub 自动提供的 `GITHUB_TOKEN` 只对当前仓库授权，增加 `contents: read` 不会让它拥有其他私有仓库的读取权限。
+
+CI 在 Go 初始化和缓存下载前配置 `GOPRIVATE/GONOPROXY/GONOSUMDB`，并在 Runner 临时目录写入权限为 0600 的 Git 认证配置；结束时清理。令牌不会写入源码、`go.mod` 或缓存。来自 fork 的 PR 不会获得 Secret，因此私有依赖检查会明确提示缺少令牌；不使用 `pull_request_target` 执行 PR 代码。
+
+依赖公开后，可移除 workflow 的私有认证与清理步骤，恢复匿名下载。认证只解决仓库读取问题：最新源码使用新增契约时，仍需按 protocol/blade → kernel → schema → sparq → app 的顺序发布新版本并更新依赖；工具依赖 protocol。推送 `main` 不会更新已有 `v0.0.1` 标签，也不能覆盖旧标签代替正常版本发布。
