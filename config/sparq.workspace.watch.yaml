@@ -1,0 +1,50 @@
+# workspace 联调同时监听默认壳和它实际引用的 Go module。
+# 默认壳单仓配置仍使用同目录的 sparq.watch.yaml。
+cwd: ..
+
+build:
+  command: go build -o tmp/sparq-dev ./cmd/sparq
+
+run:
+  command: exec ./tmp/sparq-dev serve --config config/app.yaml --env dev --addr 127.0.0.1:19090
+
+watch:
+  paths:
+    - .
+    - ../packages/sparq
+    - ../packages/sparq-schema
+    - ../packages/sparq-kernel
+    - ../packages/sparq-protocol
+    - ../packages/sparq-blade
+  include: ["**/*.go", "**/go.mod", "**/go.sum", "config/*.yaml"]
+  # Schema 的 storage/ 是 Go 源码；仅忽略默认壳的运行数据子目录。
+  exclude:
+    - .git
+    - .cache
+    - tmp
+    - bin
+    - dist
+    - vendor
+    - storage/database
+    - storage/logs
+    - storage/cache
+    - storage/tmp
+    - storage/uploads
+    - run
+    - node_modules
+    - public
+  mode: notify
+  poll_interval: 500ms
+  debounce: 300ms
+
+stop:
+  grace_timeout: 5s
+  kill_timeout: 2s
+
+restart:
+  policy: never
+
+health:
+  url: http://127.0.0.1:19090
+  path: /__healthz__
+  timeout: 60s

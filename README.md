@@ -77,7 +77,9 @@ go run ./sparq-tool/cmd/sparq-tool dev app --file sparq-app/sparq.dev.yaml
 
 `--dry-run` 仅校验配置、路径和启动顺序，不启动服务或检查端口占用。正式启动会先构建并等待后端健康检查，再启动 Shell；看到就绪提示后访问 `http://127.0.0.1:5188`。工具显式注入 API 代理，覆盖 Shell `.env` 中的旧地址。Ctrl+C 或任一开发进程退出会停止本次启动的全部进程；已占用端口会在启动前报错，请先停止之前手动启动的实例。
 
-后端 [config/sparq.watch.yaml](config/sparq.watch.yaml) 监听默认壳 Go 源码和配置，变更后重新构建 `tmp/sparq-dev`；Shell 使用 Vite HMR。修改相邻框架模块时，可在 `watch.paths` 增加对应源码目录（相对 `sparq-app/`），例如 `../packages/sparq`。独立克隆默认只监听当前应用，不要求存在其他 workspace 模块。
+开发 workspace 的 `sparq.dev.yaml` 使用`config/sparq.workspace.watch.yaml`，同时监听默认壳及 `sparq`、`sparq-schema`、`sparq-kernel`、`sparq-protocol`、`sparq-blade` 源码，变更后重新构建 `tmp/sparq-dev`；Shell 使用 Vite HMR。更换监听配置后需停止原联调进程再执行 `make dev-app`，否则旧进程仍使用原监听范围。
+
+独立克隆时将 `backend.watch_file` 改为 `config/sparq.watch.yaml`，该配置只监听当前应用，不要求相邻框架仓库。
 
 已安装新版工具后，可以将上面的 `go run ./sparq-tool/cmd/sparq-tool` 替换为 `sparq-tool`。旧版工具不识别新增 `admin` 字段，请先使用源码入口。只需启动后端时仍可在 `sparq-app/` 执行 `make dev`。正式构建路径继续使用 `build.yaml` 的 `admin.path`、`frontend.path`，与开发进程配置独立。
 

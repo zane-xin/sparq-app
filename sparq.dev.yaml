@@ -3,7 +3,7 @@ target:
   kind: application
 
 backend:
-  watch_file: config/sparq.watch.yaml
+  watch_file: config/sparq.workspace.watch.yaml
 
 admin:
   mode: source-dev
