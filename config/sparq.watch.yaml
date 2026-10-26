@@ -1,0 +1,28 @@
+# cwd 相对本文件，指向 sparq-app 根目录。
+cwd: ..
+
+build:
+  command: go build -o tmp/sparq-dev ./cmd/sparq
+
+run:
+  command: exec ./tmp/sparq-dev serve --config config/app.yaml --env dev --addr 127.0.0.1:19090
+
+watch:
+  paths: [.]
+  include: ["**/*.go", go.mod, go.sum, "config/*.yaml"]
+  exclude: [.git, .cache, tmp, bin, dist, vendor, storage, run, node_modules, public]
+  mode: notify
+  poll_interval: 500ms
+  debounce: 300ms
+
+stop:
+  grace_timeout: 5s
+  kill_timeout: 2s
+
+restart:
+  policy: never
+
+health:
+  url: http://127.0.0.1:19090
+  path: /__healthz__
+  timeout: 60s

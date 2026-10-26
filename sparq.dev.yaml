@@ -1,0 +1,21 @@
+# 从 workspace 执行 sparq-tool dev app --file sparq-app/sparq.dev.yaml。
+target:
+  kind: application
+
+backend:
+  watch_file: config/sparq.watch.yaml
+
+admin:
+  mode: source-dev
+  cwd: ../sparq-admin
+  command: pnpm dev
+  url: http://127.0.0.1:5188
+  api_proxy_target: http://127.0.0.1:19090
+  env:
+    # API 使用 Shell 同源地址，再由 Vite 代理到后端。
+    VITE_SPARQ_ADMIN_API_BASE_URL: ""
+  timeout: 60s
+
+# 默认壳没有自己的业务前端入口。
+frontend:
+  mode: disabled

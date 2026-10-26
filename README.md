@@ -43,6 +43,44 @@ cd sparq-app
 go run ./cmd/sparq
 ```
 
+## 同时开发后端和 Admin Shell
+
+保留 `sparq-app/` 与 `sparq-admin/` 两个独立仓库，由 [sparq.dev.yaml](sparq.dev.yaml) 指定后端监听配置和 Shell 源码路径。默认后端为 `http://127.0.0.1:19090`，Shell 为 `http://127.0.0.1:5188`，API 请求由 Shell 代理到后端。默认壳没有自己的业务前端，所以 `frontend.mode` 为 `disabled`。
+
+以下命令均从包含 `sparq-app/`、`sparq-admin/` 和 `sparq-tool/` 的开发 workspace 根目录执行。先安装 Shell 依赖：
+
+```bash
+pnpm --dir sparq-admin install
+```
+
+如果实例尚未安装，先单独启动后端：
+
+```bash
+go run ./sparq-app/cmd/sparq serve --root sparq-app --config config/app.yaml --env dev --addr 127.0.0.1:19090
+```
+
+访问 `http://127.0.0.1:19090/`，按页面提示进入 `/__install__` 完成安装，然后 Ctrl+C 停止后端。联调使用运行态 `/__healthz__` 判断后端就绪；安装阶段尚无该接口，不能直接等待联调命令完成安装。
+
+检查执行计划，再启动联调：
+
+```bash
+make dev-app-plan
+make dev-app
+```
+
+根目录 Makefile 会先构建当前源码的工具，也可直接使用源码入口：
+
+```bash
+go run ./sparq-tool/cmd/sparq-tool dev app --file sparq-app/sparq.dev.yaml --dry-run
+go run ./sparq-tool/cmd/sparq-tool dev app --file sparq-app/sparq.dev.yaml
+```
+
+`--dry-run` 仅校验配置、路径和启动顺序，不启动服务或检查端口占用。正式启动会先构建并等待后端健康检查，再启动 Shell；看到就绪提示后访问 `http://127.0.0.1:5188`。工具显式注入 API 代理，覆盖 Shell `.env` 中的旧地址。Ctrl+C 或任一开发进程退出会停止本次启动的全部进程；已占用端口会在启动前报错，请先停止之前手动启动的实例。
+
+后端 [config/sparq.watch.yaml](config/sparq.watch.yaml) 监听默认壳 Go 源码和配置，变更后重新构建 `tmp/sparq-dev`；Shell 使用 Vite HMR。修改相邻框架模块时，可在 `watch.paths` 增加对应源码目录（相对 `sparq-app/`），例如 `../packages/sparq`。独立克隆默认只监听当前应用，不要求存在其他 workspace 模块。
+
+已安装新版工具后，可以将上面的 `go run ./sparq-tool/cmd/sparq-tool` 替换为 `sparq-tool`。旧版工具不识别新增 `admin` 字段，请先使用源码入口。只需启动后端时仍可在 `sparq-app/` 执行 `make dev`。正式构建路径继续使用 `build.yaml` 的 `admin.path`、`frontend.path`，与开发进程配置独立。
+
 ## 构建
 
 正式应用构建使用配置文件，不再从 `sparq-app`、`sparq-frontend` 或 Website 目录之间推导组件。可复制 [build.example.yaml](build.example.yaml) 为 `build.yaml` 后按项目路径修改：
