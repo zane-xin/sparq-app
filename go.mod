@@ -2,7 +2,7 @@ module github.com/zane-xin/sparq-app
 
 go 1.26.1
 
-require github.com/zane-xin/sparq v0.0.3
+require github.com/zane-xin/sparq v0.0.4
 
 require (
 	filippo.io/edwards25519 v1.2.0 // indirect
@@ -33,7 +33,7 @@ require (
 	github.com/xuri/excelize/v2 v2.10.1 // indirect
 	github.com/xuri/nfp v0.0.2-0.20250530014748-2ddeb826f9a9 // indirect
 	github.com/zane-xin/sparq-blade v0.0.2 // indirect
-	github.com/zane-xin/sparq-kernel v0.0.2 // indirect
+	github.com/zane-xin/sparq-kernel v0.0.4 // indirect
 	github.com/zane-xin/sparq-protocol v0.0.2 // indirect
 	github.com/zane-xin/sparq-schema v0.0.3 // indirect
 	go.uber.org/atomic v1.11.0 // indirect

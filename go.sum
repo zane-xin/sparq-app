@@ -82,12 +82,12 @@ github.com/xuri/excelize/v2 v2.10.1 h1:V62UlqopMqha3kOpnlHy2CcRVw1V8E63jFoWUmMzx
 github.com/xuri/excelize/v2 v2.10.1/go.mod h1:iG5tARpgaEeIhTqt3/fgXCGoBRt4hNXgCp3tfXKoOIc=
 github.com/xuri/nfp v0.0.2-0.20250530014748-2ddeb826f9a9 h1:+C0TIdyyYmzadGaL/HBLbf3WdLgC29pgyhTjAT/0nuE=
 github.com/xuri/nfp v0.0.2-0.20250530014748-2ddeb826f9a9/go.mod h1:WwHg+CVyzlv/TX9xqBFXEZAuxOPxn2k1GNHwG41IIUQ=
-github.com/zane-xin/sparq v0.0.3 h1:F034asdk+31BJufCcFpUNLKbOY1UYV6n1zF2qsXDb2k=
-github.com/zane-xin/sparq v0.0.3/go.mod h1:ohY85IrJp1iFdcCo7M7ZmsAXUX00IgbQS8VoRFXUQwY=
+github.com/zane-xin/sparq v0.0.4 h1:Xz3i1Yawknl4C2L5ijntVWtXwKVUjTK7KHcuNhTa9c4=
+github.com/zane-xin/sparq v0.0.4/go.mod h1:54xP8Af/1n2bVmgV/HAMYVa/Wk0WANsefmlXED3bxQg=
 github.com/zane-xin/sparq-blade v0.0.2 h1:av6q/MdZylkeUAn6zebaujHuBnV056RX1pcBtp0bSDs=
 github.com/zane-xin/sparq-blade v0.0.2/go.mod h1:G9nU02ai2XU/6fEa1SCOQDQ7FlU58XZ3sYPd/bpxA0k=
-github.com/zane-xin/sparq-kernel v0.0.2 h1:YG5p2q9az6dd//4ubBQG8O2wF49whF3Wq7/ih6rGrOY=
-github.com/zane-xin/sparq-kernel v0.0.2/go.mod h1:vKhkMa9qkgAScINQMzvLyTTutAAjzZpq7Nx50r/pPKs=
+github.com/zane-xin/sparq-kernel v0.0.4 h1:0DDTE8cjwlHUMbd6NWzECQrLZBs+fcur2fXMexSaWks=
+github.com/zane-xin/sparq-kernel v0.0.4/go.mod h1:vKhkMa9qkgAScINQMzvLyTTutAAjzZpq7Nx50r/pPKs=
 github.com/zane-xin/sparq-protocol v0.0.2 h1:eGm+GOn/sLQarK0bmj/txglRy4QAhykVUruR+uk+Cvo=
 github.com/zane-xin/sparq-protocol v0.0.2/go.mod h1:HIvJChKSYqaZ4/rtoJqHOzwnoSP4KKGYY9p3yVuou5s=
 github.com/zane-xin/sparq-schema v0.0.3 h1:mvMR/R0MFxZRwApHFNhfB/P/F/vCbbgi5gzdwKUdQS8=
