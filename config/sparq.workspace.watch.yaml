@@ -16,7 +16,8 @@ watch:
     - ../packages/sparq-kernel
     - ../packages/sparq-protocol
     - ../packages/sparq-blade
-  include: ["**/*.go", "**/go.mod", "**/go.sum", "config/*.yaml"]
+  # Schema 声明通过 go:embed 编入后端，修改后同样需要重新构建。
+  include: ["**/*.go", "**/*.schema.json", "**/*.schema.jsonc", "**/go.mod", "**/go.sum", "config/*.yaml"]
   # Schema 的 storage/ 是 Go 源码；仅忽略默认壳的运行数据子目录。
   exclude:
     - .git
