@@ -5,10 +5,8 @@ app:
     key: ""
     # url app 对外访问地址，storage public_url 未配置时会使用 {app.url}/uploads。
     url: ""
-    # instance_id 只作为旧配置首次迁移入口；运行时身份以 identity_path 文件为准。
+    # instance_id 可指定首次生成的实例 ID；身份文件始终位于应用根目录 storage/sparq.json。
     instance_id: ""
-    # identity_path 保存可随应用迁移的稳定实例身份，必须位于应用根目录内。
-    identity_path: storage/app-identity.json
     # env 运行环境，会加载同目录下的 app.{env}.yaml。
     env: local
     # timezone 应用默认时区，统一时间输出会按该时区转换。
