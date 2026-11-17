@@ -1,6 +1,6 @@
 module github.com/zane-xin/sparq-app
 
-go 1.26.1
+go 1.27.0
 
 require github.com/zane-xin/sparq v0.0.16
 
