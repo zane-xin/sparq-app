@@ -2,7 +2,7 @@ module github.com/zane-xin/sparq-app
 
 go 1.27.0
 
-require github.com/zane-xin/sparq v0.1.0
+require github.com/zane-xin/sparq v0.1.1
 
 require (
 	filippo.io/edwards25519 v1.2.0 // indirect
